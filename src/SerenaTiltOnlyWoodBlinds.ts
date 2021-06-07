@@ -65,23 +65,20 @@ export class SerenaTiltOnlyWoodBlinds {
 
     // `value` can range from 0-100, but n.b. 50 is flat. The Homekit
     // Window Covering's required "Position" characteristic expects 0 to be
-    // "fully closed" and 100 to be "fully open". As such, we constrain the
-    // tilt angle to [-90,0] degrees by scaling `value` after the fact.
+    // "fully closed" and 100 to be "fully open".
 
     async handleCurrentPositionGet(): Promise<number> {
         this.platform.log.info('blinds', this.device.FullyQualifiedName.join(' '), 'were asked for current or target position');
         const bridge = await this.bridge;
         const tilt = await bridge.readBlindsTilt(this.device);
-        const adj_val = Math.min(100, tilt * 2);
-        this.platform.log.info('got adjusted position', adj_val);
-        return adj_val;
+        return tilt;
     }
 
     async handleTargetPositionSet(value: CharacteristicValue): Promise<void> {
-        const adj_val = Number(value) / 2;
-        this.platform.log.info('blinds', this.device.FullyQualifiedName.join(' '), 'were set to adjusted value', adj_val);
+        const val = Number(value);
+        this.platform.log.info('blinds', this.device.FullyQualifiedName.join(' '), 'were set to value', val);
         const bridge = await this.bridge;
-        await bridge.setBlindsTilt(this.device, adj_val);
+        await bridge.setBlindsTilt(this.device, val);
 
     }
 
@@ -91,16 +88,16 @@ export class SerenaTiltOnlyWoodBlinds {
 
     handleUnsolicited(response: Response): void {
         if ((response.Body as OneZoneStatus)?.ZoneStatus?.Zone?.href === this.device.LocalZones[0].href) {
-            const adj_val = Math.min(100, (response.Body as OneZoneStatus).ZoneStatus.Tilt * 2);
-            this.platform.log.info('accessory', this.accessory.UUID, 'got a response with adjusted value', adj_val);
+            const val = (response.Body as OneZoneStatus).ZoneStatus.Tilt;
+            this.platform.log.info('accessory', this.accessory.UUID, 'got a response with value', val);
 
             this.accessory.getService(this.platform.api.hap.Service.WindowCovering)!
                 .getCharacteristic(this.platform.api.hap.Characteristic.TargetPosition)
-                .updateValue(adj_val);
+                .updateValue(val);
 
             this.accessory.getService(this.platform.api.hap.Service.WindowCovering)!
                 .getCharacteristic(this.platform.api.hap.Characteristic.CurrentPosition)
-                .updateValue(adj_val);
+                .updateValue(val);
         }
     }
 
