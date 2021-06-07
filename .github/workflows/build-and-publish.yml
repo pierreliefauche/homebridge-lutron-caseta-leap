@@ -1,6 +1,6 @@
-name: Build and Lint
+name: Build and Publish
 
-on: [push, pull_request]
+on: push
 
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
           node-version: 14
 
       - name: Install dependencies
-        run: npm ci
+        run: npm i
 
       - name: Lint the project
         run: npm run lint
