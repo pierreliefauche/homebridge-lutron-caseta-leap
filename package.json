@@ -1,6 +1,7 @@
 {
   "displayName": "Lutron Caseta LEAP",
   "name": "@pierreliefauche/homebridge-lutron-caseta-leap",
+  "private": false,
   "version": "2.0.5",
   "description": "Support for the Lutron Caseta Smart Bridge 2 (non-pro)",
   "license": "Apache-2.0",
