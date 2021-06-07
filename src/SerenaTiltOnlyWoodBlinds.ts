@@ -71,6 +71,7 @@ export class SerenaTiltOnlyWoodBlinds {
         this.platform.log.info('blinds', this.device.FullyQualifiedName.join(' '), 'were asked for current or target position');
         const bridge = await this.bridge;
         const tilt = await bridge.readBlindsTilt(this.device);
+        this.platform.log.info('got position', tilt);
         return tilt;
     }
 
